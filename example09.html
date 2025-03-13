@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- University of Maribor | Faculty of Organizational Sciences -->
+<!-- Cybernetics & Decision Support Systems Laboratory -->
+<!-- Andrej Škraba CC BY-SA -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABM example</title>
+</head>
+<body>
+Example with agents, classes and objects
+<br>
+<canvas id="canvas-1" width="500" height="250" style="border: 1px dashed #099999;"></canvas>   
+<br>
+<script>
+"use strict"; // we enable work with classes
+
+let can1, canvas1; // we declare two new variables for canvas and context (canvas1)
+// boilerplate code for canvas
+can1 = document.getElementById("canvas-1"); // in html document we search for the canvas-1; variable can1 is now connected to canvas-1
+canvas1 = can1.getContext("2d"); // from now on we work with variable canvas1
+
+let x = 200;
+let y = 100;
+let xVel = 1; // velocity in x direction (movement in pixels)
+let yVel = 1; // velocity in y direction
+
+canvas1.fillStyle = "#ff0000"; // we determine the fill colour, hex #RRGGBB
+canvas1.fillRect(x, y, 10, 10); // x upper L corner, y up. L cor. width, heigth
+
+loop(); // call the function loop
+
+function loop(){
+    canvas1.clearRect(0, 0, can1.width, can1.height); // erase entire canvas
+
+    x = x + xVel; // compute new x coordinate, consider value of the step
+    y = y + yVel; // compute new y coordinate
+
+    // consider the right and left edge of the canvas
+    if (x>=490 || x<=0){ // || OR operator if we ar at the right edge of the canvas
+        xVel = -xVel; // we reverse the direction if we hit the end of the canvas on the right or left
+    }
+
+    // consider the lower and upper edge of the canvas
+    if(y>=240 || y<=0){ // if we are at the botoom or the top edge of the canvas
+        yVel = -yVel; // we reverse the direction if we hit the lower or upper edge of the canvas
+    }
+
+    canvas1.fillRect(x, y, 10, 10); // x upper L corner, y up. L cor. width, heigth
+    setTimeout(loop, 5); // since the setTimeout is within the loop() function it would repeat forewer | after 20ms, we trigger the loop() function
+}
+
+</script>
+
+</body>
+</html>
