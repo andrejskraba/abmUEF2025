@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- University of Maribor | Faculty of Organizational Sciences -->
+<!-- Cybernetics & Decision Support Systems Laboratory -->
+<!-- Andrej Škraba CC BY-SA -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABM example</title>
+</head>
+<body>
+Example with agents, classes and objects
+<br>
+<button id="add-agent" onClick="addAgent();">addAgent</button>
+<br>
+<canvas id="canvas-1" width="500" height="250" style="border: 1px dashed #099999;"></canvas>   
+<br>
+<script>
+"use strict"; // we enable work with classes
+
+let can1, canvas1; // we declare two new variables for canvas and context (canvas1)
+// boilerplate code for canvas
+can1 = document.getElementById("canvas-1"); // in html document we search for the canvas-1; variable can1 is now connected to canvas-1
+canvas1 = can1.getContext("2d"); // from now on we work with variable canvas1
+
+let x = 200;
+let y = 100;
+let xVel = 1; // x velocity
+let yVel = 1; // y velocity
+
+let arrayOfAgents = []; // we declare an array variable, in which our agents will be stored
+let numberOfAgents = 3; // declare number of agents in the model
+
+canvas1.fillStyle = "#ff0000"; // we determine the fill colour, hex #RRGGBB
+
+class Agent{
+	constructor(x, y, xVel, yVel){
+		this.x = x; // x coordinate
+		this.y = y; // y coordinate
+		this.xVel = xVel; // velocity in x direction
+		this.yVel = yVel; // velocity in y direction
+	}
+	refresh(){
+		// consider the right and left edge of the canvas
+		if (this.x >= 490 || this.x <= 0) { // if we are at the right or left edge of canvas
+			this.xVel = -this.xVel; // we reverse the direction if we hit the end of the canvas on the right or on the left
+		}
+		
+		// consider the lower and upper edge of the canvas
+		if (this.y >= 240 || this.y <= 0) { // if we are at the bottom or top edge of canvas
+			this.yVel = -this.yVel; // we reverse the direction if we hit the lower or upper edge of the canvas
+		}
+
+		this.x = this.x + this.xVel; // compute new x coordinate, consider value of the velocity in x direction, xVel
+		this.y = this.y + this.yVel; // compute new y coordinate, consider value of the velocity in y direction yVel
+	}
+}
+
+function loop(){
+    canvas1.clearRect(0, 0, can1.width, can1.height); // erase entire canvas
+	for(let i=0; i<arrayOfAgents.length; i++){
+        arrayOfAgents[i].refresh(); // run the refresh() code for agent in arrayOfAgents under index [i] to compute new x and y coordinates according to xVel and yVel
+        canvas1.fillRect(arrayOfAgents[i].x, arrayOfAgents[i].y, 10, 10); // draw red square (x upper L corner, y up. L cor. width, heigth)
+    }
+    setTimeout(loop, 1); // since the setTimeout is within the loop() function it would repeat forewer | after 20ms, we trigger the loop() function
+}
+
+for(let i=0; i<numberOfAgents; i++){
+    // writting agents to arrayOfAgents with random coordinates and random velocities between -0.5 and +0.5
+    arrayOfAgents[i] = new Agent(Math.random() * (can1.width - 10), Math.random() * (can1.height -10), 1 * Math.random() - 0.5, 1 * Math.random() - 0.5); // create new agent and write it in arrayOfAgents under index [0] on coordinates x=200, y=100, xVel=1, yVel=1
+}
+
+function addAgent() {
+    arrayOfAgents.push(new Agent(Math.random() * (can1.width - 10), Math.random() * (can1.height -10), 1 * Math.random() - 0.5, 1 * Math.random() - 0.5));
+}
+
+loop(); // call the function loop
+
+</script>
+
+</body>
+</html>

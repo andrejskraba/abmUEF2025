@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- University of Maribor | Faculty of Organizational Sciences -->
+<!-- Cybernetics & Decision Support Systems Laboratory -->
+<!-- Andrej Škraba CC BY-SA -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABM example</title>
+</head>
+<body>
+Example with agents, classes and objects
+<br>
+<canvas id="canvas-1" width="500" height="250" style="border: 1px dashed #099999;"></canvas>   
+<br>
+<script>
+"use strict"; // we enable work with classes
+
+let can1, canvas1; // we declare two new variables for canvas and context (canvas1)
+// boilerplate code for canvas
+can1 = document.getElementById("canvas-1"); // in html document we search for the canvas-1; variable can1 is now connected to canvas-1
+canvas1 = can1.getContext("2d"); // from now on we work with variable canvas1
+
+canvas1.fillStyle = "#ff0000"; // we determine the fill colour, hex #RRGGBB
+
+let arrayOfAgents = []; // we declare an array variable in which our agents will be stored
+let numberOfAgents = 100; // declare the number of agents in the model
+
+class Agent{
+    constructor(x, y, xVel, yVel, color){
+        this.x = x;
+        this.y = y;
+        this.xVel = xVel; // velocity in x direction (movement in pixels)
+        this.yVel = yVel; // velocity in y direction
+        this.color = color; // we declare the color of an agent
+    }
+
+    refresh(){
+        this.x = this.x + this.xVel; // compute new x coordinate, consider value of the step
+        this.y = this.y + this.yVel; // compute new y coordinate
+
+        // consider the right and left edge of the canvas
+        if (this.x>=490 || this.x<=0){ // || OR operator if we ar at the right edge of the canvas
+            this.xVel = -this.xVel; // we reverse the direction if we hit the end of the canvas on the right or left
+        }
+
+        // consider the lower and upper edge of the canvas
+        if(this.y>=240 || this.y<=0){ // if we are at the botoom or the top edge of the canvas
+            this.yVel = -this.yVel; // we reverse the direction if we hit the lower or upper edge of the canvas
+        }
+
+        // if the x is less then 0 we put it on 0 (so that the agent does not "dive" into the wall)
+        if(this.x<0){this.x=0};
+        // if y is les than 0 we put it on 0
+        if(this.y<0){this.y=0};
+        // similar on the other side of the canvas, if the coordinate is larger than width or height
+        if(this.x > can1.width - 10){this.x = can1.width - 10}; // 10 is the width of an agent
+        if(this.y > can1.height - 10){this.y = can1.height - 10};
+    }
+}
+
+// A function that checks the distance between agents
+// We check the distance between each pair of agents, comparing every agent with every other egent
+// In event of collision, we execute the collision function
+function checkDistancesBetweenAgents(){
+    for(let i=0; i<numberOfAgents; i++){
+        let A = arrayOfAgents[i];
+
+        for(let j=i+1; j<numberOfAgents; j++){
+            let B = arrayOfAgents[j];
+
+            // determine the difference in coordinates
+            let dx = B.x - A.x;
+            let dy = B.y - A.y;
+            let dist = Math.sqrt(dx*dx + dy*dy); // determine the distance by Pitaghorean theorem
+
+            // if the distance between two agents is less than 10 we execute the collison
+            if(dist<10){ // if the condition, that two agents are close enough is fullfiled
+                executeCollision(i, j);
+            }
+
+        }
+    }
+}
+
+// function, that performs the collision between agents with indexes i and j
+function executeCollision(indexOfFirstAgent, indexOfSecondAgent){
+    let x1 = arrayOfAgents[indexOfFirstAgent].x;
+    let y1 = arrayOfAgents[indexOfFirstAgent].y;
+    let x2 = arrayOfAgents[indexOfSecondAgent].x;
+    let y2 = arrayOfAgents[indexOfSecondAgent].y
+
+    let dx = x2 - x1;
+    let dy = y2 - y1;
+    let dist = Math.sqrt(dx*dx + dy*dy);
+    let bounceDistance = 6; // A variable that determines how much the agents bounce off uppon collision in the direction of interconnecting center line between agents
+
+    // normalized x and y component
+    let normalizedDx = dx/dist;
+    let normalizedDy = dy/dist;
+    
+    // determine the midpoint
+    let middlePointX = (x1 + x2)/2;
+    let middlePointY = (y1 + y2)/2;
+
+    // determine new positions
+    arrayOfAgents[indexOfFirstAgent].x = middlePointX - normalizedDx * bounceDistance; // move in direction of interconnecting line
+    arrayOfAgents[indexOfFirstAgent].y = middlePointY - normalizedDy * bounceDistance;
+    arrayOfAgents[indexOfSecondAgent].x = middlePointX + normalizedDx * bounceDistance;
+    arrayOfAgents[indexOfSecondAgent].y = middlePointY + normalizedDy * bounceDistance;
+
+    // exchange the velocities
+    let tempX = arrayOfAgents[indexOfFirstAgent].xVel;
+    let tempY = arrayOfAgents[indexOfFirstAgent].yVel;
+    arrayOfAgents[indexOfFirstAgent].xVel = arrayOfAgents[indexOfSecondAgent].xVel;
+    arrayOfAgents[indexOfFirstAgent].yVel = arrayOfAgents[indexOfSecondAgent].yVel;
+    arrayOfAgents[indexOfSecondAgent].xVel = tempX;
+    arrayOfAgents[indexOfSecondAgent].yVel = tempY;
+
+    // if the red and green collide, the green becomes red
+    // if the first is red #ff0000 and second green #00ff00
+    if(arrayOfAgents[indexOfFirstAgent].color == "#ff0000" && arrayOfAgents[indexOfSecondAgent].color == "#00ff00"){
+        arrayOfAgents[indexOfSecondAgent].color = "#ff0000"; // second agent, that was green becomes red
+    }
+
+    // if the first is green #00ff00 and second red #ff0000
+    if(arrayOfAgents[indexOfFirstAgent].color == "#00ff00" && arrayOfAgents[indexOfSecondAgent].color == "#ff0000"){
+        arrayOfAgents[indexOfFirstAgent].color = "#ff0000"; // first agent, that was green becomes red
+    }
+
+}
+
+function loop(){
+    canvas1.clearRect(0, 0, can1.width, can1.height); // erase entire canvas
+    checkDistancesBetweenAgents();
+
+    for(let i=0; i<numberOfAgents; i++){
+        arrayOfAgents[i].refresh(); // run the refresh() function for agent in arrayOfAgents under index [i] to compute new x and y coordinates
+        canvas1.fillStyle = arrayOfAgents[i].color; // we determine the fill colour
+        canvas1.fillRect(arrayOfAgents[i].x, arrayOfAgents[i].y, 10, 10); // x upper L corner, y up. L cor. width, heigth
+    }
+    
+    setTimeout(loop, 2); // since the setTimeout is within the loop() function it would repeat forewer | after 20ms, we trigger the loop() function
+}
+
+for(let i=0; i<numberOfAgents; i++){
+    // writting agents to arrayOfAgents with random coordinates and random velocities between -0.5 and +0.5
+    arrayOfAgents[i] = new Agent(Math.random() * (can1.width - 10), Math.random() * (can1.height - 10), 1 * Math.random() - 0.5, 1 * Math.random() - 0.5, "#00ff00");
+}
+
+arrayOfAgents[0].color = "#ff0000"; // we set red color for the first agent
+
+loop(); // call the function loop
+
+</script>
+
+</body>
+</html>
