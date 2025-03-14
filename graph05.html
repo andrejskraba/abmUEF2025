@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- University of Maribor | Faculty of Organizational Sciences -->
+<!-- Cybernetics & Decision Support Systems Laboratory -->
+<!-- Andrej Škraba CC BY-SA -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph example</title>
+</head>
+<body>
+Example with graph
+<br>
+<canvas id="canvas-2" width="800" height="100" style="border: 1px dashed #099999;"></canvas>   
+<br>
+<script>
+"use strict"; // we enable work with classes
+
+let can2, canvas2; // we declare two new variables for canvas and context (canvas1)
+// boilerplate code for canvas
+can2 = document.getElementById("canvas-2"); // in html document we search for the canvas-2; variable can2 is now connected to canvas-1
+canvas2 = can2.getContext("2d"); // from now on we work with variable canvas2
+
+canvas2.strokeStyle = "#ff0000"; // we determine the stroke colour, hex #RRGGBB ff_HEX=255_dec
+
+let x = new Array(); // create new array x, we could also write let x = []; ([] marks Array variable)
+let y = new Array(); // create new array x, we could also write let x = []; ([] marks Array variable)
+
+x=[10, 110, 210, 310, 410, 510]; // definition as a row
+y=[10, 65, 50, 75, 55, 90];
+
+canvas2.beginPath(); // start of plotting
+
+for(let i = 0; i < y.length; i++) {
+    canvas2.lineTo(x[i], 100 - y[i]); // since the y axis is reverse, we should convert values, from 90 -> 10 | 100-90=10
+}
+
+canvas2.stroke(); // to show the line on the canvas
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- University of Maribor | Faculty of Organizational Sciences -->
+<!-- Cybernetics & Decision Support Systems Laboratory -->
+<!-- Andrej Škraba CC BY-SA -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph example</title>
+</head>
+<body>
+Example with graph
+<br>
+<canvas id="canvas-2" width="800" height="100" style="border: 1px dashed #099999;"></canvas>   
+<br>
+<script>
+"use strict"; // we enable work with classes
+
+let can2, canvas2; // we declare two new variables for canvas and context (canvas1)
+// boilerplate code for canvas
+can2 = document.getElementById("canvas-2"); // in html document we search for the canvas-2; variable can2 is now connected to canvas-1
+canvas2 = can2.getContext("2d"); // from now on we work with variable canvas2
+
+canvas2.strokeStyle = "#ff0000"; // we determine the stroke colour, hex #RRGGBB ff_HEX=255_dec
+
+canvas2.beginPath(); // start of plotting
+canvas2.lineTo(10,  10); // first point on the canvas
+canvas2.lineTo(110, 65); // second point on the canvas
+canvas2.lineTo(210, 50); // ...
+canvas2.lineTo(310, 75);
+canvas2.lineTo(410, 55);
+canvas2.lineTo(510, 90);
+canvas2.stroke(); // to show the line on the canvas
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- University of Maribor | Faculty of Organizational Sciences -->
+<!-- Cybernetics & Decision Support Systems Laboratory -->
+<!-- Andrej Škraba CC BY-SA -->
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Graph example</title>
+</head>
+<body>
+Example with graph
+<br>
+<canvas id="canvas-2" width="250" height="250" style="border: 1px dashed #099999;"></canvas>   
+<br>
+<script>
+"use strict"; // we enable work with classes
+
+let timer; // variable timer for setTimeout - needed for simulation
+let graph1; // variable for the first object of class Graph
+
+class Graph{
+    constructor(canvasID, maxY){
+        this.can2 = document.getElementById(canvasID); // in html document we search for the canvas-2; variable can2 is now connected to canvas-1
+        this.canvas2 = this.can2.getContext("2d"); // from now on we work with variable canvas2
+        this.canvas2.strokeStyle = "#ff0000"; // we determine the stroke colour, hex #RRGGBB ff_HEX=255_dec
+        this.x = new Array(); // create new array x, we could also write let x = []; ([] marks Array variable)
+        this.y = new Array(); // create new array x, we could also write let x = []; ([] marks Array variable)
+        this.graphWidth = this.can2.width; // maximum on x-axis equals canvas width
+        for (let i=0; i < this.can2.width; i++) { // filling x vector
+            this.x[i] = i; // for x we write [0, 1, 2, ...], i.e. values of i
+        }
+        this.maxY = maxY; // maximum value, that we would like to plot it on the graph
+    }
+    addValueOrCutAndAdd(yValue){
+        if (this.y.length == this.graphWidth + 1) { // if the canvas is 10x10 we have 11x11 points, therefore "+1"
+            this.y.shift(); // in the case, that the table of values is full we delete first value in y array
+            this.y.push(yValue); // we push the new value at the end of the y array
+        }
+        else { // če polje z vrednostmi še ni polno
+            this.y.push(yValue); // če tabela y še ni polna potisnemo novo vrednost v polje
+        }
+    }
+
+    plot(yValue){
+        this.addValueOrCutAndAdd(yValue);
+        this.canvas2.clearRect(0, 0, this.can2.width, this.can2.height); // clear canvas
+        this.canvas2.beginPath(); // start of plotting
+        for(let i = 0; i < this.y.length; i++) {
+            this.canvas2.lineTo(this.x[i], this.can2.height - (this.y[i]/this.maxY) * this.can2.height); // since the y axis is reverse, we should convert values, from 90 -> 10 | 100-90=10 | instead 100 we get the heigth of the canvas, i.e. can2.height
+        }
+        this.canvas2.stroke(); // to show the line on the canvas
+    }
+}
+
+function loop() {
+    graph1.plot(Math.random()*100);
+    timer = setTimeout(loop, 10); // we repeat the loop on 10ms (after 10ms the function loop will be called - again and again)
+}
+
+graph1 = new Graph("canvas-2", 100); // first parameter is canvas ID, second is maxY; we create grph1 as the object of the class Graph
+
+loop();
+
+</script>
+
+</body>
+</html>
